@@ -103,6 +103,7 @@ class APN::Notification < APN::Base
 
         APN::Connection.open_for_delivery do |conn, sock|
           notifications.each do |noty|
+            logger.info "sending notification #{noty.id} to device #{noty.device_id}"
             conn.write(noty.message_for_sending)
             noty.sent_at = Time.now
             noty.save
