@@ -19,8 +19,11 @@ class APN::Notification < ActiveRecord::Base
   extend ::ActionView::Helpers::TextHelper
   serialize :custom_properties
 
-  set_table_name 'apn_notifications'
-
+  if Rails.version > '3.0'
+    self.table_name = 'apn_notifications'
+  else
+    set_table_name 'apn_notifications'
+  end
 
   belongs_to :device, :class_name => 'APN::Device'
 
