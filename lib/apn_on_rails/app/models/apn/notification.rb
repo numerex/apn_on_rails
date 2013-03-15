@@ -21,6 +21,8 @@ class APN::Notification < APN::Base
 
   belongs_to :device, :class_name => 'APN::Device'
 
+  attr_accessible :sound,:alert
+
   # Stores the text alert message you want to send to the device.
   # 
   # If the message is over 150 characters long it will get truncated
