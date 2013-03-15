@@ -19,6 +19,11 @@ class APN::Notification < APN::Base
   extend ::ActionView::Helpers::TextHelper
   serialize :custom_properties
 
+  def self.table_name # :nodoc:
+    self.to_s.gsub("::", "_").tableize
+  end
+
+
   belongs_to :device, :class_name => 'APN::Device'
 
   attr_accessible :sound,:alert

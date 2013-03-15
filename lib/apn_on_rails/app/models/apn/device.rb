@@ -10,6 +10,11 @@
 #   Device.create(:token => '5gxadhy6 6zmtxfl6 5zpbcxmw ez3w7ksf qscpr55t trknkzap 7yyt45sc g6jrw7qz')
 class APN::Device < APN::Base
 
+  def self.table_name # :nodoc:
+    self.to_s.gsub("::", "_").tableize
+  end
+
+
   has_many :notifications, :class_name => 'APN::Notification'
 
   validates_uniqueness_of :token
