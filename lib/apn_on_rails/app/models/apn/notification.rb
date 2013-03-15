@@ -14,14 +14,12 @@
 # 
 # As each APN::Notification is sent the <tt>sent_at</tt> column will be timestamped,
 # so as to not be sent again.
-class APN::Notification < APN::Base
+class APN::Notification < ActiveRecord::Base
   include ::ActionView::Helpers::TextHelper
   extend ::ActionView::Helpers::TextHelper
   serialize :custom_properties
 
-  def self.table_name # :nodoc:
-    self.to_s.gsub("::", "_").tableize
-  end
+  set_table_name 'apn_notifications'
 
 
   belongs_to :device, :class_name => 'APN::Device'
