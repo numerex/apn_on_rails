@@ -22,6 +22,8 @@ class APN::Device < APN::Base
   # application by Apple.
   attr_accessor :feedback_at
 
+  attr_accessible :token
+
   # Stores the token (Apple's device ID) of the iPhone (device).
   # 
   # If the token comes in like this:
