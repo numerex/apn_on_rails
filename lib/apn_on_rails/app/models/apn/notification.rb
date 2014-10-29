@@ -1,6 +1,6 @@
-# Represents the message you wish to send. 
+# Represents the message you wish to send.
 # An APN::Notification belongs to an APN::Device.
-# 
+#
 # Example:
 #   apn = APN::Notification.new
 #   apn.badge = 5
@@ -8,10 +8,10 @@
 #   apn.alert = 'Hello!'
 #   apn.device = APN::Device.find(1)
 #   apn.save
-# 
+#
 # To deliver call the following method:
 #   APN::Notification.send_notifications
-# 
+#
 # As each APN::Notification is sent the <tt>sent_at</tt> column will be timestamped,
 # so as to not be sent again.
 class APN::Notification < ActiveRecord::Base
@@ -19,29 +19,23 @@ class APN::Notification < ActiveRecord::Base
   extend ::ActionView::Helpers::TextHelper
   serialize :custom_properties
 
-  if Rails.version > '3.0'
-    self.table_name = 'apn_notifications'
-  else
-    set_table_name 'apn_notifications'
-  end
+  self.table_name = 'apn_notifications'
 
-  belongs_to :device, :class_name => 'APN::Device'
-
-  attr_accessible :sound,:alert
+  belongs_to :device, class_name: 'APN::Device'
 
   # Stores the text alert message you want to send to the device.
-  # 
+  #
   # If the message is over 150 characters long it will get truncated
   # to 150 characters with a <tt>...</tt>
   def alert=(message)
     if !message.blank? && message.size > 150
-      message = truncate(message, :length => 150)
+      message = truncate(message, length: 150)
     end
     write_attribute('alert', message)
   end
 
   # Creates a Hash that will be the payload of an APN.
-  # 
+  #
   # Example:
   #   apn = APN::Notification.new
   #   apn.badge = 5
@@ -49,7 +43,7 @@ class APN::Notification < ActiveRecord::Base
   #   apn.alert = 'Hello!'
   #   apn.apple_hash # => {"aps" => {"badge" => 5, "sound" => "my_sound.aiff", "alert" => "Hello!"}}
   #
-  # Example 2: 
+  # Example 2:
   #   apn = APN::Notification.new
   #   apn.badge = 0
   #   apn.sound = true
@@ -62,7 +56,7 @@ class APN::Notification < ActiveRecord::Base
     result['aps']['badge'] = self.badge.to_i if self.badge
     if self.sound
       result['aps']['sound'] = self.sound if self.sound.is_a? String
-      result['aps']['sound'] = "1.aiff" if self.sound.is_a?(TrueClass)
+      result['aps']['sound'] = '1.aiff' if self.sound.is_a?(TrueClass)
     end
     if self.custom_properties
       self.custom_properties.each do |key,value|
@@ -73,7 +67,7 @@ class APN::Notification < ActiveRecord::Base
   end
 
   # Creates the JSON string required for an APN message.
-  # 
+  #
   # Example:
   #   apn = APN::Notification.new
   #   apn.badge = 5
@@ -96,14 +90,14 @@ class APN::Notification < ActiveRecord::Base
 
     # Opens a connection to the Apple APN server and attempts to batch deliver
     # an Array of notifications.
-    # 
+    #
     # This method expects an Array of APN::Notifications. If no parameter is passed
     # in then it will use the following:
     #   APN::Notification.all(:conditions => {:sent_at => nil})
-    # 
+    #
     # As each APN::Notification is sent the <tt>sent_at</tt> column will be timestamped,
     # so as to not be sent again.
-    # 
+    #
     # This can be run from the following Rake task:
     #   $ rake apn:notifications:deliver
     def send_notifications(notifications = APN::Notification.all(:conditions => {:sent_at => nil}))
