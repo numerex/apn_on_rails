@@ -100,7 +100,8 @@ class APN::Notification < ActiveRecord::Base
     #
     # This can be run from the following Rake task:
     #   $ rake apn:notifications:deliver
-    def send_notifications(notifications = APN::Notification.all(:conditions => {:sent_at => nil}))
+    def send_notifications(notifications = nil)
+      notifications ||= APN::Notification.where(sent_at: nil).to_a
       unless notifications.nil? || notifications.empty?
 
         APN::Connection.open_for_delivery do |conn, sock|
